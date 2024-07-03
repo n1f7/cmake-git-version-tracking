@@ -53,7 +53,7 @@ const char* git_Describe();
 const char* git_Branch();
 
 /// The tag of currunt commit
-const char* CommitTag()
+const char* git_CommitTag()
 
 GIT_VERSION_TRACKING_EXTERN_C_END
 #undef GIT_VERSION_TRACKING_EXTERN_C_BEGIN
@@ -144,6 +144,10 @@ inline const StringOrView Describe() {
 }
 inline const StringOrView Branch() {
   static const StringOrView kValue = internal::InitString(git_Branch());
+  return kValue;
+}
+inline const StringOrView CommitTag() {
+  static const StringOrView kValue = internal::InitString(git_CommitTag());
   return kValue;
 }
 
