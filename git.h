@@ -53,7 +53,7 @@ const char* git_Describe();
 const char* git_Branch();
 
 /// The tag of currunt commit
-const char* git_CommitTag()
+const char* git_CommitTag();
 
 GIT_VERSION_TRACKING_EXTERN_C_END
 #undef GIT_VERSION_TRACKING_EXTERN_C_BEGIN
