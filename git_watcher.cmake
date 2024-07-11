@@ -243,7 +243,15 @@ function(GetGitState _working_dir)
         set(ENV{GIT_BRANCH} "${output}")
     endif()
 
-    # Get tag of current comit if it exists
+    # Get tag of current comit if it exists and not master branch
+
+    RunGitCommand(rev-parse --abbrev-ref HEAD)
+    if(${output} STREQUAL "SL-7852-mark-release-candidate-versions")
+        set(is_master_branch TRUE)
+    else()
+        set(is_master_branch FALSE)
+    endif()
+
     RunGitCommand(fetch --tags)
     RunGitCommand(describe --tags ${object})
 
@@ -253,7 +261,7 @@ function(GetGitState _working_dir)
     # of the tagged object and the abbreviated object name of the most recent commit.
     # So if we get a tag name without suffixes then the current commit contains the tag 
     # and we return it, otherwise we return an empty string.
-    if(exit_code EQUAL 0 AND NOT (output MATCHES "^.+-[0-9]+-g[0-9a-f]+$")) 
+    if(exit_code EQUAL 0 AND NOT (output MATCHES "^.+-[0-9]+-g[0-9a-f]+$") AND NOT is_master_branch) 
         set(ENV{GIT_COMMIT_TAG} "${output}")
     else()
         set(ENV{GIT_COMMIT_TAG} "")
