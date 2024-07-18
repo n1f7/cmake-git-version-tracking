@@ -244,7 +244,6 @@ function(GetGitState _working_dir)
     endif()
 
     # Get tag of current comit if it exists
-    RunGitCommand(fetch --tags)
     RunGitCommand(describe --tags ${object})
 
     # The command finds the most recent tag that is reachable from a commit. 
