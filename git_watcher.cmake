@@ -244,7 +244,9 @@ function(GetGitState _working_dir)
     endif()
 
     # Get tag of current comit if it exists
+    set(_permit_git_failure ON)
     RunGitCommand(describe --tags ${object})
+    unset(_permit_git_failure)
 
     # The command finds the most recent tag that is reachable from a commit. 
     # If the tag points to the commit, then only the tag is shown. 
