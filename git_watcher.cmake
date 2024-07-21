@@ -81,6 +81,8 @@ endmacro()
 
 CHECK_REQUIRED_VARIABLE(PRE_CONFIGURE_FILE)
 CHECK_REQUIRED_VARIABLE(POST_CONFIGURE_FILE)
+CHECK_REQUIRED_VARIABLE(PRE_CONFIGURE_RESOURCE_FILE)
+CHECK_REQUIRED_VARIABLE(POST_CONFIGURE_FILE)
 CHECK_OPTIONAL_VARIABLE(GIT_STATE_FILE "${CMAKE_CURRENT_BINARY_DIR}/git-state-hash")
 CHECK_OPTIONAL_VARIABLE(GIT_WORKING_DIR "${CMAKE_SOURCE_DIR}")
 CHECK_OPTIONAL_VARIABLE_NOPATH(GIT_FAIL_IF_NONZERO_EXIT TRUE)
@@ -260,6 +262,7 @@ function(GitStateChangedAction)
         set(${var_name} $ENV{${var_name}})
     endforeach()
     configure_file("${PRE_CONFIGURE_FILE}" "${POST_CONFIGURE_FILE}" @ONLY)
+    configure_file("${PRE_CONFIGURE_RESOURCE_FILE}" "${POST_CONFIGURE_RESOURCE_FILE}" @ONLY)
 endfunction()
 
 
@@ -299,6 +302,8 @@ function(CheckGit _working_dir _state_changed)
     # pre-configure file has changed.
     file(SHA256 ${PRE_CONFIGURE_FILE} preconfig_hash)
     string(SHA256 state "${preconfig_hash}${state}")
+    file(SHA256 ${PRE_CONFIGURE_RESOURCE_FILE} preconfig_resource_hash)
+    string(SHA256 state "${preconfig_resource_hash}${state}")
 
     # Check if the state has changed compared to the backup on disk.
     if(EXISTS "${GIT_STATE_FILE}")
@@ -326,9 +331,10 @@ endfunction()
 function(SetupGitMonitoring)
     add_custom_target(check_git
         ALL
-        DEPENDS ${PRE_CONFIGURE_FILE}
+        DEPENDS ${PRE_CONFIGURE_FILE} ${PRE_CONFIGURE_RESOURCE_FILE}
         BYPRODUCTS
             ${POST_CONFIGURE_FILE}
+            ${POST_CONFIGURE_RESOURCE_FILE}
             ${GIT_STATE_FILE}
         COMMENT "Checking the git repository for changes..."
         COMMAND
@@ -338,7 +344,9 @@ function(SetupGitMonitoring)
             -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
             -DGIT_STATE_FILE=${GIT_STATE_FILE}
             -DPRE_CONFIGURE_FILE=${PRE_CONFIGURE_FILE}
+            -DPRE_CONFIGURE_RESOURCE_FILE=${PRE_CONFIGURE_RESOURCE_FILE}
             -DPOST_CONFIGURE_FILE=${POST_CONFIGURE_FILE}
+            -DPOST_CONFIGURE_RESOURCE_FILE=${POST_CONFIGURE_RESOURCE_FILE}
             -DGIT_FAIL_IF_NONZERO_EXIT=${GIT_FAIL_IF_NONZERO_EXIT}
             -DGIT_IGNORE_UNTRACKED=${GIT_IGNORE_UNTRACKED}
             -P "${CMAKE_CURRENT_LIST_FILE}")
@@ -354,7 +362,7 @@ function(Main)
         # Check if the repo has changed.
         # If so, run the change action.
         CheckGit("${GIT_WORKING_DIR}" changed)
-        if(changed OR NOT EXISTS "${POST_CONFIGURE_FILE}")
+        if(changed OR NOT EXISTS "${POST_CONFIGURE_FILE}" OR NOT EXISTS ${POST_CONFIGURE_RESOURCE_FILE})
             GitStateChangedAction()
         endif()
     else()

@@ -1,0 +1,36 @@
+#define GIT_VERSION_MAJOR    0
+#define GIT_VERSION_MINOR    9
+#define GIT_VERSION_MICRO    0
+#define GIT_VERSION_REVISION 0
+
+#define GIT_DIGITAL_VERSION  0,9,10,0
+#define GIT_VERSION_HEX      0x00000009000A0000
+
+#define GIT_HEAD_DESCRIBE    @GIT_DESCRIBE@
+#define GIT_HEAD_TAG         "v0.9"
+#define GIT_HEAD_TAG_VERSION "v0.9"
+#define GIT_HEAD_COMMITS     10
+#define GIT_HEAD_HASH        @GIT_HEAD_SHA1@
+#define GIT_HEAD_DATE        @GIT_COMMIT_DATE_ISO8601@
+#define GIT_HEAD_NAME        @GIT_AUTHOR_NAME@
+
+#define GIT_COPYRIGHT        "2020-2023"
+
+#define GIT_MAJOR_TAG        ""
+#define GIT_MAJOR_COMMITS    0
+#define GIT_MINOR_TAG        ""
+#define GIT_MINOR_COMMITS    0
+#define GIT_MICRO_TAG        ""
+#define GIT_MICRO_COMMITS    0
+
+#define GIT_BRANCH_NAME      @GIT_BRANCH@
+#define GIT_BRANCH_COMMITS   379
+#define GIT_BRANCH_DIRTY     @GIT_IS_DIRTY@
+
+#define GIT_PATCHED_FLAG     VS_FF_PATCHED
+#define GIT_PRERELEASE_FLAG  0
+#define GIT_SPECIAL_FLAG     0
+#define GIT_PRIVATE_FLAG     0
+
+#define GIT_PRIVATE_STRING   ""
+#define GIT_COMMENT_STRING   ""
