@@ -107,6 +107,7 @@ set(_state_variable_names
     GIT_COMMIT_BODY
     GIT_DESCRIBE
     GIT_BRANCH
+    GIT_COMMIT_TAG # Custom property to track the commit tag if it exists
     # >>>
     # 1. Add the name of the additional git variable you're interested in monitoring
     #    to this list.
@@ -242,6 +243,23 @@ function(GetGitState _working_dir)
         set(ENV{GIT_BRANCH} "${object}")
     else()
         set(ENV{GIT_BRANCH} "${output}")
+    endif()
+
+    # Get tag of current comit if it exists
+    set(_permit_git_failure ON)
+    RunGitCommand(describe --tags ${object})
+    unset(_permit_git_failure)
+
+    # The command finds the most recent tag that is reachable from a commit. 
+    # If the tag points to the commit, then only the tag is shown. 
+    # Otherwise, it suffixes the tag name with the number of additional commits on top 
+    # of the tagged object and the abbreviated object name of the most recent commit.
+    # So if we get a tag name without suffixes then the current commit contains the tag 
+    # and we return it, otherwise we return an empty string.
+    if(exit_code EQUAL 0 AND NOT (output MATCHES "^.+-[0-9]+-g[0-9a-f]+$")) 
+        set(ENV{GIT_COMMIT_TAG} "${output}")
+    else()
+        set(ENV{GIT_COMMIT_TAG} "")
     endif()
 
     # >>>

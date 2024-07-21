@@ -52,6 +52,9 @@ const char* git_Describe();
 /// The symbolic reference tied to HEAD.
 const char* git_Branch();
 
+/// The tag of currunt commit
+const char* git_CommitTag();
+
 GIT_VERSION_TRACKING_EXTERN_C_END
 #undef GIT_VERSION_TRACKING_EXTERN_C_BEGIN
 #undef GIT_VERSION_TRACKING_EXTERN_C_END
@@ -141,6 +144,10 @@ inline const StringOrView Describe() {
 }
 inline const StringOrView Branch() {
   static const StringOrView kValue = internal::InitString(git_Branch());
+  return kValue;
+}
+inline const StringOrView CommitTag() {
+  static const StringOrView kValue = internal::InitString(git_CommitTag());
   return kValue;
 }
 
