@@ -7,14 +7,14 @@
 #define GIT_VERSION_HEX      0x00000009000A0000
 
 #define GIT_HEAD_DESCRIBE    @GIT_DESCRIBE@
-#define GIT_HEAD_TAG         "v0.9"
-#define GIT_HEAD_TAG_VERSION "v0.9"
+#define GIT_HEAD_TAG         @GIT_COMMIT_TAG@
+#define GIT_HEAD_TAG_VERSION @GIT_COMMIT_TAG@
 #define GIT_HEAD_COMMITS     10
 #define GIT_HEAD_HASH        @GIT_HEAD_SHA1@
 #define GIT_HEAD_DATE        @GIT_COMMIT_DATE_ISO8601@
 #define GIT_HEAD_NAME        @GIT_AUTHOR_NAME@
 
-#define GIT_COPYRIGHT        "2020-2023"
+#define GIT_COPYRIGHT        "2024"
 
 #define GIT_MAJOR_TAG        ""
 #define GIT_MAJOR_COMMITS    0
