@@ -108,6 +108,11 @@ set(_state_variable_names
     GIT_DESCRIBE
     GIT_BRANCH
     GIT_COMMIT_TAG # Custom property to track the commit tag if it exists
+    GIT_VERSION_MAJOR
+    GIT_VERSION_MINOR
+    GIT_VERSION_REVISION
+    GIT_DIGITAL_VERSION
+    GIT_HEAD_COMMITS
     # >>>
     # 1. Add the name of the additional git variable you're interested in monitoring
     #    to this list.
@@ -227,7 +232,7 @@ function(GetGitState _working_dir)
     endif()
 
     # Get output of git describe
-    RunGitCommand(describe --always ${object})
+    RunGitCommand(describe --tags --long --always --dirty)
     if(NOT exit_code EQUAL 0)
         set(ENV{GIT_DESCRIBE} "unknown")
     else()
@@ -258,9 +263,46 @@ function(GetGitState _working_dir)
     # and we return it, otherwise we return an empty string.
     if(exit_code EQUAL 0 AND NOT (output MATCHES "^.+-[0-9]+-g[0-9a-f]+$")) 
         set(ENV{GIT_COMMIT_TAG} "${output}")
+        # Remove the 'v' prefix
+		string(REPLACE "v" "" version_string ${output})
+
+		# Split the string by '.'
+		string(REPLACE "." ";" version_list ${version_string})
+
+		# Get the MAJOR and MINOR parts
+		list(GET version_list 0 VER_MAJOR)
+		list(GET version_list 1 VER_MINOR)
+        if ("${VER_MAJOR}" STREQUAL "")
+			set(ENV{GIT_VERSION_MAJOR} "0")
+        else()
+			set(ENV{GIT_VERSION_MAJOR} "${VER_MAJOR}")
+        endif()
+        if ("${VER_MINOR}" STREQUAL "")
+			set(ENV{GIT_VERSION_MINOR} "0")
+        else()
+			set(ENV{GIT_VERSION_MINOR} "${VER_MINOR}")
+        endif()
     else()
         set(ENV{GIT_COMMIT_TAG} "")
+		set(ENV{GIT_VERSION_MAJOR} "0")
+		set(ENV{GIT_VERSION_MINOR} "0")
     endif()
+
+    RunGitCommand(describe --tags --abbrev=0 --always)
+    if(exit_code EQUAL 0)
+		RunGitCommand(rev-list ${output}..${object} --count)
+		if(exit_code EQUAL 0)
+            set(VER_REVISION "${output}")
+			set(ENV{GIT_VERSION_REVISION} "${VER_REVISION}")
+			set(ENV{GIT_HEAD_COMMITS} "${VER_REVISION}")
+		else()
+			set(ENV{GIT_VERSION_REVISION} "0")
+		endif()
+    endif()
+
+    set(ENV{GIT_DIGITAL_VERSION} "$ENV{GIT_VERSION_MAJOR},$ENV{GIT_VERSION_MINOR},$ENV{GIT_VERSION_REVISION},0")
+
+
 
     # >>>
     # 2. Additional git properties can be added here via the
