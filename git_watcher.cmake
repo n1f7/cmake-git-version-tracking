@@ -255,19 +255,16 @@ function(GetGitState _working_dir)
     RunGitCommand(describe --tags ${object})
     unset(_permit_git_failure)
 
-    # The command finds the most recent tag that is reachable from a commit. 
-    # If the tag points to the commit, then only the tag is shown. 
-    # Otherwise, it suffixes the tag name with the number of additional commits on top 
-    # of the tagged object and the abbreviated object name of the most recent commit.
-    # So if we get a tag name without suffixes then the current commit contains the tag 
-    # and we return it, otherwise we return an empty string.
-    if(exit_code EQUAL 0 AND NOT (output MATCHES "^.+-[0-9]+-g[0-9a-f]+$")) 
+
+    if(exit_code EQUAL 0) 
         set(ENV{GIT_COMMIT_TAG} "${output}")
         # Remove the 'v' prefix
 		string(REPLACE "v" "" version_string ${output})
 
 		# Split the string by '.'
-		string(REPLACE "." ";" version_list ${version_string})
+        string(FIND ${version_string} "-" pos)
+        string(SUBSTRING ${version_string} 0 ${pos} version_string1)
+		string(REPLACE "." ";" version_list ${version_string1})
 
 		# Get the MAJOR and MINOR parts
 		list(GET version_list 0 VER_MAJOR)
